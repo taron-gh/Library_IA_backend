@@ -46,14 +46,14 @@ server.get('/admin/addBook/:email/:password/:bookName/:bookCount', (req, res) =>
                 authorized = true;
             }
         });
-        if(authorized){
+        if (authorized) {
             db.books.push({
                 name: req.params['bookName'],
                 count: req.params['bookCount'],
             })
         }
         return updateJsonDb(db);
-    }).then(() => {res.send()})
+    }).then(() => { res.send() })
 })
 server.get('/admin/removeBook/:email/:password/:bookName', (req, res) => {
     parseJsonDb().then(() => {
@@ -63,14 +63,11 @@ server.get('/admin/removeBook/:email/:password/:bookName', (req, res) => {
                 authorized = true;
             }
         });
-        if(authorized){
-            db.books.push({
-                name: req.params['bookName'],
-                count: req.params['bookCount'],
-            })
+        if (authorized) {
+            db.books = db.books.filter(elem => elem.name != req.params['bookName'])
         }
         return updateJsonDb(db);
-    }).then(() => {res.send()})
+    }).then(() => { res.send() })
 })
 
 
@@ -93,9 +90,47 @@ server.get('/getBooks/:email/:password', (req, res) => {
     })
 })
 
+//*************USER REQUESTS**************
+
+server.get('/user/authenticate/:email/:password', (req, res) => {
+    parseJsonDb().then(() => {
+        let result = false;
+        db.users.forEach(user => {
+            if (!user.isAdmin && user.email == req.params['email'] && user.password == req.params['password']) {
+                result = true;
+            }
+        });
+        return JSON.stringify({ isUser: result })
+    }).then((r) => {
+        res.send(r);
+    })
+})
+
+server.get('/user/register/:email/:password', (req, res) => {
+    let result = false;
+    parseJsonDb().then(() => {
+        db.users.forEach(user => {
+            if (user.email != req.params['email']) {
+                result = true;
+            }
+        });
+        if (result) {
+            db.users.push({
+                isAdmin: false,
+                email: req.params['email'],
+                password: req.params['password'],
+                booksOwned: []
+            })
+        }
+        return updateJsonDb(db);
+    }).then(() => JSON.stringify({ registered: result }))
+        .then((r) => { res.send(r); })
+})
 
 
 
+
+//*************UTILITIES**************
 async function parseJsonDb() {
     db = await JSON.parse(fs.readFileSync('./db.json', 'utf-8'))
     if (!db.users) {
@@ -117,4 +152,4 @@ async function updateJsonDb(d) {
     await fs.promises.writeFile('db.json', JSON.stringify(d))
 }
 
-server.listen(5000);
+server.listen(8000);

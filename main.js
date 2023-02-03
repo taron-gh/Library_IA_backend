@@ -127,8 +127,74 @@ server.get('/user/register/:email/:password', (req, res) => {
         .then((r) => { res.send(r); })
 })
 
+server.get('/user/addBook/:email/:password/:bookName', (req, res) => {
+    let result = false;
+    parseJsonDb().then(() => {
+        let authorized = false;
+        let index = 0;
+        db.users.forEach((user, i) => {
+            if (user.email == req.params['email'] && user.password == req.params['password']) {
+                authorized = true;
+                index = i;
+            }
+        });
+        if (authorized) {
+            db.books.forEach((b, i) => {
+                if(b.name == req.params['bookName'] && b.count > 0 ){
+                    db.users[index].booksOwned.push(req.params['bookName'])
+                    result = true;
+                    b.count--;
+                }
+            })
+        }
+        return updateJsonDb(db);
+    }).then(() => JSON.stringify({isAdded: result}))
+    .then((r) => { res.send(r) })
+})
 
+server.get('/user/returnBook/:email/:password/:bookName', (req, res) => {
+    let result = false;
+    parseJsonDb().then(() => {
+        let authorized = false;
+        let index = 0;
+        db.users.forEach((user, i) => {
+            if (user.email == req.params['email'] && user.password == req.params['password']) {
+                authorized = true;
+                index = i;
+            }
+        });
+        if (authorized) {
+            db.books.forEach((b, i) => {
+                if(b.name == req.params['bookName']){
+                    db.users[index].booksOwned = db.users[index].booksOwned.filter(elem => elem != req.params['bookName'])
+                    result = true;
+                    b.count++;
+                }
+            })
+        }
+        return updateJsonDb(db);
+    }).then(() => JSON.stringify({isReturned: result}))
+    .then((r) => { res.send(r) })
+})
 
+server.get('/user/getMyBooks/:email/:password', (req, res) => {
+    parseJsonDb().then(() => JSON.stringify(db.books)).then((r) => {
+        // console.log(r, db.books);
+        let isRegistered = false;
+        let arr = [];
+        db.users.forEach(user => {
+            if (user.email == req.params['email'] && user.password == req.params['password']) {
+                isRegistered = true;
+                arr = user.booksOwned;
+            }
+        });
+
+        if(!isRegistered){
+            res.send("Access Denied!");
+        }
+        return JSON.stringify(arr);
+    }).then((r) => res.send(r))
+})
 
 //*************UTILITIES**************
 async function parseJsonDb() {

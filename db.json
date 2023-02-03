@@ -1,1 +1,23 @@
-{"users":[{"isAdmin":true,"email":"admin@library.com","password":"qwerty1234"},{"isAdmin":false,"email":"ghlijyan@gmail.com","password":"biwdbsicbdiu"}],"books":[{"name":"Harry Potter","count":"10"}]}
+{
+    "users": [
+        {
+            "isAdmin": true,
+            "email": "admin@library.com",
+            "password": "qwerty1234"
+        },
+        {
+            "isAdmin": false,
+            "email": "ghlijyan@gmail.com",
+            "password": "biwdbsicbdiu",
+            "booksOwned": [
+                "Lord of Rings"
+            ]
+        }
+    ],
+    "books": [
+        {
+            "name": "Harry Potter",
+            "count": 11
+        }
+    ]
+}

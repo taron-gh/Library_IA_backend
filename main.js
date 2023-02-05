@@ -40,7 +40,8 @@ server.use(cors(corsOptions))
 */
 
 //*************ADMIN REQUESTS**************
-server.get('/admin/authenticate/:email/:password', (req, res) => {
+//DONE
+server.get('/admin/authenticate/:email/:password', (req, res) => { 
     parseJsonDb().then(() => {
         let result = false;
         db.users.forEach(user => {
@@ -53,7 +54,9 @@ server.get('/admin/authenticate/:email/:password', (req, res) => {
         res.send(r);
     })
 })
-server.get('/admin/addBook/:email/:password/:bookName/:bookCount', (req, res) => {
+
+//DONE
+server.get('/admin/addBook/:email/:password/:bookName/:bookCount', (req, res) => { 
     parseJsonDb().then(() => {
         let authorized = false;
         db.users.forEach(user => {
@@ -68,7 +71,9 @@ server.get('/admin/addBook/:email/:password/:bookName/:bookCount', (req, res) =>
             })
         }
         return updateJsonDb(db);
-    }).then(() => { res.send() })
+    }).then(() => { 
+        res.send() 
+    })
 })
 server.get('/admin/removeBook/:email/:password/:bookName', (req, res) => {
     parseJsonDb().then(() => {
@@ -87,7 +92,8 @@ server.get('/admin/removeBook/:email/:password/:bookName', (req, res) => {
 
 
 //*************GENERAL REQUESTS**************
-
+//at user - DONE 
+//at admin - 
 server.get('/getBooks/:email/:password', (req, res) => {
     parseJsonDb().then(() => JSON.stringify(db.books)).then((r) => {
         // console.log(r, db.books);
@@ -100,14 +106,14 @@ server.get('/getBooks/:email/:password', (req, res) => {
         if (isRegistered) {
             res.send(r);
         } else {
-            res.send("Access Denied!");
+            res.send('{"accessDenied": "true"}');
         }
     })
 })
 
 //*************USER REQUESTS**************
-
-server.get('/user/authenticate/:email/:password', (req, res) => {
+//DONE
+server.get('/user/authenticate/:email/:password', (req, res) => { 
     parseJsonDb().then(() => {
         let result = false;
         db.users.forEach(user => {
@@ -121,7 +127,8 @@ server.get('/user/authenticate/:email/:password', (req, res) => {
     })
 })
 
-server.get('/user/register/:email/:password', (req, res) => {
+//DONE
+server.get('/user/register/:email/:password', (req, res) => {  
     let result = false;
     parseJsonDb().then(() => {
         db.users.forEach(user => {
@@ -142,6 +149,7 @@ server.get('/user/register/:email/:password', (req, res) => {
         .then((r) => { res.send(r); })
 })
 
+//DONE
 server.get('/user/addBook/:email/:password/:bookName', (req, res) => {
     let result = false;
     parseJsonDb().then(() => {
@@ -167,6 +175,7 @@ server.get('/user/addBook/:email/:password/:bookName', (req, res) => {
     .then((r) => { res.send(r) })
 })
 
+//DONE
 server.get('/user/returnBook/:email/:password/:bookName', (req, res) => {
     let result = false;
     parseJsonDb().then(() => {
@@ -192,7 +201,8 @@ server.get('/user/returnBook/:email/:password/:bookName', (req, res) => {
     .then((r) => { res.send(r) })
 })
 
-server.get('/user/getMyBooks/:email/:password', (req, res) => {
+//DONE
+server.get('/user/getMyBooks/:email/:password', (req, res) => { 
     parseJsonDb().then(() => JSON.stringify(db.books)).then((r) => {
         // console.log(r, db.books);
         let isRegistered = false;
@@ -213,7 +223,6 @@ server.get('/user/getMyBooks/:email/:password', (req, res) => {
 //hello
 //*************UTILITIES**************
 async function parseJsonDb() {
-    db = await JSON.parse(fs.readFileSync('./db.json', 'utf-8'))
     if (!db.users) {
         db = {
             users: [
@@ -227,6 +236,9 @@ async function parseJsonDb() {
         }
         await updateJsonDb(db);
     }
+
+    db = await JSON.parse(fs.readFileSync('./db.json', 'utf-8'))
+
 }
 
 async function updateJsonDb(d) {
